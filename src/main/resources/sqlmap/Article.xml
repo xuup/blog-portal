@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.ArticleDao">
+	
+	<select id="selectArticle" resultType="com.blog.dto.ArticleDto">
+		select t.id as id,
+		t.title as title,
+		t.context as context,
+		t.abstract as remark,
+		t.create_time as createTime,
+		c.category_name as categoryName,
+		t.read_number as readNumber
+		 from article t,category c where 1=1 and t.category = c.category_id and t.is_show = 1
+		 <if test="keyWord != null and keyWord != '' ">
+		 	and t.title like CONCAT('%',#{keyWord},'%')
+		 </if>
+		 <if test="id != null and id != '' ">
+		 	and t.id = #{id}
+		 </if>
+		 <if test="category != null ">
+		 	and t.category = #{category}
+		 </if>
+		 order by t.create_time desc
+		<if test="limit != null and offset !=null">
+           		limit #{offset},#{limit}
+        </if>
+        
+	</select>
+	
+	
+	<select id="selectArticleById" resultType="com.blog.dto.ArticleDto">
+		select t.id as id,
+		t.title as title,
+		t.category as category,
+		t.create_time as createTime,
+		c.category_name as categoryName,
+		t.context as context,
+		t.read_number as readNumber
+		 from article t,category c where 1=1 and t.category = c.category_id
+		 <if test="_parameter != null ">
+		 	and t.id = #{id}
+		 </if>
+	</select>
+	
+	<select id="countArticle" resultType="int">
+		select count(1) from article a, category c where 1=1 and c.category_id = a.category and a.is_show = 1 
+		<if test="keyWord != null and keyWord != '' ">
+			and a.title like CONCAT('%',#{keyWord},'%')
+		</if>
+		<if test="categoryId != null ">
+			and c.category_id = #{categoryId}
+		</if>
+	</select>
+	
+	
+	<insert id="saveArticle" useGeneratedKeys="true" keyProperty="userId" parameterType="com.blog.dto.ArticleDto">
+		insert into article
+		(	
+			title,
+			context,
+			abstract,
+			category,
+			is_show
+		)values
+		(	
+			#{title},
+			#{context},
+			#{remark},
+			#{category},
+			#{isShow}
+		)
+	</insert>
+	
+	<update id="updateArticle" parameterType="com.blog.dto.ArticleDto">
+		update article set 
+		<if test="readNumber != null">
+			read_number = #{readNumber}
+		</if>
+		where id = #{id}
+	</update>
+	
+	<select id="selectHotArticle" resultType="com.blog.dto.ArticleDto">
+		select c.id as id,
+		c.title as title,
+		c.abstract as remark
+		from article c where c.is_show = 1 order by c.read_number desc limit 5
+	</select>
+	
+	<select id="getUrlLinks" resultType="com.blog.dto.UrlLinksDto">
+		select u.id as id,
+			u.url_value as urlValue,
+			u.url_name as urlName
+		 from url_link u where 1=1 and u.is_active = 1;
+	</select>
+	
+</mapper>

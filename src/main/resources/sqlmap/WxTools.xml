@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.WxToolDao">
+	
+	<select id="getWxTools" resultType="com.blog.dto.WxToolDto">
+		select t.id,t.owner,t.pic_url as picUrl,t.detail
+		from wx_tool t where t.is_show = 1;
+	</select>
+	
+</mapper>
